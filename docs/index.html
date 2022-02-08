@@ -1,0 +1,168 @@
+<html>
+<body>
+<script type="module">
+  import {
+    div,
+    span,
+    code,
+    h3,
+    header,
+    footer,
+    button,
+    input,
+    flexCol,
+    flexCenteredRow,
+    flexRow, ul, form, li, title, meta, flexCenteredCol
+  } from 'https://cdn.jsdelivr.net/npm/@srfnstack/fntags@0.3.5/src/fnelements.min.mjs'
+  import { fnstate } from 'https://cdn.jsdelivr.net/npm/@srfnstack/fntags@0.3.5/src/fntags.min.mjs'
+
+  // Build the document header
+  document.head.append(
+    title('fntags hello world'),
+    meta({ charset: 'utf-8' }),
+    meta({
+      'http-equiv': 'X-UA-Compatible',
+      content: 'IE=edge'
+    }),
+    meta({
+      name: 'viewport',
+      content: 'width=device-width, initial-scale=1'
+    })
+  )
+
+  const content = flexRow({ style: { justifyContent: 'space-evenly', flexWrap: 'wrap' } })
+  document.body.append(content)
+
+  const addContent = (title, newContent) => content.append(
+    flexCenteredCol({
+        style: {
+          padding: '10px',
+          height: '250px',
+          width: '250px',
+          border: 'solid 1px #eee',
+          borderRadius: '5px'
+        }
+      },
+      h3(title),
+      flexCenteredCol(
+        { style: { justifyContent: 'center', height: '100%' } },
+        newContent
+      )
+    )
+  )
+
+  const element = div(
+    code('Hello '),
+
+    span({
+        id: 'world',
+        style: { color: 'green' }
+      },
+      'World!'
+    )
+  )
+
+  element.animate(
+    [{ transform: 'rotate(360deg)' }],
+    {
+      duration: 1000,
+      iterations: Infinity
+    }
+  )
+
+  document.body.append(element)
+
+  addContent(
+    'Animated Content',
+      element
+  )
+
+  const stuffTodo = (stuff, todos) => div(
+    h3(stuff),
+    todos.map(todo => div('- ', todo))
+  )
+
+  const frame = (...children) => div(
+    header('---Header---'),
+    ...children,
+    footer('---Footer---')
+  )
+
+  frame(
+    'Hello, Jerry',
+    stuffTodo(
+      'Here\'s Stuff to do',
+      ['a', 'b', 'c']
+    )
+  )
+
+  const enabled = fnstate(true)
+
+  addContent(
+    'Bind Element',
+    div(
+      button({
+          onclick: () => enabled(!enabled())
+        },
+        'Toggle'
+      ),
+      enabled.bindAs(() => enabled()
+        ? div('enabled')
+        : div('disabled')
+      )
+    )
+  )
+
+  const color = fnstate('dodgerblue')
+
+  addContent(
+    'Bind Style and Attributes',
+    flexCol({
+        style: 'font-size: 25px; background-color: lavenderblush'
+      },
+      input({
+        oninput: e => color(e.target.value),
+        value: color.bindAttr()
+      }),
+      flexCenteredRow({
+          style: {
+            color: color.bindStyle(),
+            justifyContent: 'center',
+            'font-size': '20px'
+          }
+        },
+        'Hello World!'
+      )
+    )
+  )
+
+  const todos = fnstate([], todo => todo)
+
+  const todoInput = input({ placeholder: 'Enter Todo' })
+
+  const addTodo = e => {
+    e.preventDefault()
+    if (!todoInput.value) return
+    todos(todos().concat([todoInput.value]))
+    todoInput.value = ''
+  }
+
+  addContent(
+    'Bind Array to Children',
+    flexCol(
+      form({ onsubmit: addTodo },
+        flexRow(
+          todoInput,
+          button({ onclick: addTodo, type: 'submit' }, 'Submit')
+        )
+      ),
+
+      todos.bindChildren(
+        ul({ class: 'todos-list' }),
+        todo => li(todo())
+      )
+    )
+  )
+</script>
+</body>
+</html>
